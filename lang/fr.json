@@ -1,0 +1,14 @@
+{
+  "mtte.export": "Exporter vers Moulinette Cloud",
+  "mtte.filterHasDrawings": "Avec dessins",
+  "mtte.filterHasLights": "Avec lumières",
+  "mtte.filterHasNotes": "Avec notes",
+  "mtte.filterHasSounds": "Avec sons",
+  "mtte.filterHasTokens": "Avec jetons",
+  "mtte.filterHasWalls": "Avec murs",
+  "mtte.howto": "Aide",
+  "mtte.howtoToolTip": "Accéder aux rubriques d'aide",
+  "mtte.index": "Indexer",
+  "mtte.indexingMoulinette": "Indexation de Moulinette",
+  "mtte.localexport": "Exporter vers Moulinette (local)"
+}

@@ -1,0 +1,56 @@
+{
+  "title": "Moulinette Compendiums (module)",
+  "description": "This module for Moulinette adds capabilities for indexing local compendiums and download assets from Moulinette Cloud.",
+  "version": "11.0.0",
+  "esmodules": [
+    "moulinette-compendiums.js"
+  ],
+  "styles": [
+    "moulinette-compendiums.css"
+  ],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json",
+      "flags": {}
+    },
+    {
+      "lang": "fr",
+      "name": "French",
+      "path": "lang/fr.json",
+      "flags": {}
+    },
+    {
+      "lang": "ja",
+      "name": "日本語",
+      "path": "lang/ja.json",
+      "flags": {}
+    }
+  ],
+  "url": "https://github.com/SvenWerlen/moulinette-compendiums",
+  "download": "https://github.com/SvenWerlen/moulinette-compendiums/archive/v-11.0.0.zip",
+  "manifest": "https://raw.githubusercontent.com/SvenWerlen/moulinette-compendiums/main/module.json",
+  "id": "moulinette-compendiums",
+  "authors": [
+    {
+      "name": "Sven Werlen",
+      "flags": {}
+    }
+  ],
+  "relationships": {
+    "requires": [
+      {
+        "id": "moulinette-core",
+        "type": "module",
+        "compatibility": {
+          "minimum": "11.0.1"
+        }
+      }
+    ]
+  },
+  "compatibility": {
+    "minimum": "10",
+    "verified": "11"
+  }
+}

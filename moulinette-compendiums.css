@@ -1,0 +1,59 @@
+.mtte.forge .asset {
+  display: inline-flex;
+  cursor: pointer;
+  position: relative;
+  width: 300px;
+}
+
+.mtte.forge .asset:hover {
+  box-shadow: 0 0 10px var(--color-shadow-highlight) inset;
+}
+
+.mtte.forge .asset img {
+  border: none;
+  object-fit: cover;
+  object-position: 50% 0;
+}
+
+.mtte.forge .asset:hover img {
+  opacity: 0.2;
+}
+
+.mtte .asset .type {
+  position: absolute;
+  top: 0px;
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+  font-size: 12px;
+  background-color: black;
+  color: white;
+  text-align: center;
+  border: 1px solid #000;
+  border-radius: 5px;
+}
+
+.mtte .asset .details {
+  padding: 0px 5px;
+  width: 225px;
+}
+
+.mtte .asset .details .title {
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.mtte .asset .details p {
+  font-size: 12px;
+}
+
+.mtte .asset .details .icons {
+  position: absolute;
+  bottom: 0;
+  display: inline-flex;
+}
+
+.mtte .asset .details .icons .info {
+  margin-right: 5px;
+}

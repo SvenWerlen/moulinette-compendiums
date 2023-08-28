@@ -1,0 +1,14 @@
+{
+  "mtte.export": "Export to Moulinette Cloud",
+  "mtte.filterHasDrawings": "Has Drawings",
+  "mtte.filterHasLights": "Has Lights",
+  "mtte.filterHasNotes": "Has Notes",
+  "mtte.filterHasSounds": "Has Sounds",
+  "mtte.filterHasTokens": "Has Tokens",
+  "mtte.filterHasWalls": "Has Walls",
+  "mtte.howto": "Help",
+  "mtte.howtoToolTip": "See the available documentation (dynamic).",
+  "mtte.index": "Index assets",
+  "mtte.indexingMoulinette": "Moulinette indexing",
+  "mtte.localexport": "Export to Moulinette (local)"
+}
