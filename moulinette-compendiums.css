@@ -34,6 +34,15 @@
   border-radius: 5px;
 }
 
+.mtte .asset .system {
+  position: absolute;
+  bottom: 0px;
+  background-color: black;
+  color: white;
+  padding: 0px 3px;
+  font-size: 10px;
+}
+
 .mtte .asset .details {
   padding: 0px 5px;
   width: 225px;
@@ -42,6 +51,8 @@
 .mtte .asset .details .title {
   white-space: nowrap;
   overflow: hidden;
+  font-weight: bold;
+  color: #444;
 }
 
 .mtte .asset .details p {
@@ -52,6 +63,12 @@
   position: absolute;
   bottom: 0;
   display: inline-flex;
+  font-size: 16px;
+}
+
+.mtte .asset .details .icons .info.action:hover {
+  font-size: 24px;
+  color: red;
 }
 
 .mtte .asset .details .icons .info {

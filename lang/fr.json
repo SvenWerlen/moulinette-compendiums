@@ -10,5 +10,9 @@
   "mtte.howtoToolTip": "Accéder aux rubriques d'aide",
   "mtte.index": "Indexer",
   "mtte.indexingMoulinette": "Indexation de Moulinette",
-  "mtte.localexport": "Exporter vers Moulinette (local)"
+  "mtte.localexport": "Exporter vers Moulinette (local)",
+  "mtte.page": "page",
+  "mtte.pages": "pages",
+  "mtte.result": "résultat",
+  "mtte.results": "résultats"
 }

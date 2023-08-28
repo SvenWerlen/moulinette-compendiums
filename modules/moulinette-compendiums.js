@@ -197,11 +197,15 @@ export class MoulinetteCompendiums extends game.moulinette.applications.Moulinet
     // entry additional icons
     html += `<div class="icons">`
     r.infos.icons.forEach((icon) => {
-      html += `<div class="info"><i class="${icon.img}" title="${icon.label}"></i></div>`
+      html += `<div class="info${icon.action ? " action " + icon.action : ""}"><i class="${icon.img}" title="${icon.label}"></i></div>`
     })
     html += "</div>"
     // entry type
     html += `</div><div class="type"><i class="${typeIcon}" title="${pack.type}"></i></div>`
+    // entry system (if specific)
+    if(r.infos.system) {
+      html += `<div class="system">${r.infos.system}</div>`
+    }
 
     return html + "</div>"
   }
@@ -239,8 +243,28 @@ export class MoulinetteCompendiums extends game.moulinette.applications.Moulinet
       const pack = this.assetsPacks[searchResult.pack]
       const compendium = game.packs.get(pack.packId)
       compendium.getIndex().then(() => {
+        console.log(compendium.get(searchResult.id))
         compendium.get(searchResult.id).sheet.render(true)
       })
+    })
+
+    // Click on icon action => execute
+    this.html.find(".asset .icons .action").click(ev => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      const element = $(ev.currentTarget).parents('.asset').first();
+      const assetIdx = element.data("idx");
+      if(!assetIdx || assetIdx <= 0 || assetIdx > this.searchResults.length) {
+        return console.error("Moulinette Compendiums | Invalid index for asset", assetIdx)
+      }
+      const searchResult = this.searchResults[assetIdx-1]
+      const pack = this.assetsPacks[searchResult.pack]
+      const compendium = game.packs.get(pack.packId)
+      compendium.getIndex().then(() => {
+        MoulinetteCompendiumsUtil.executeAction(compendium.get(searchResult.id), pack.type)
+      })
+      
+      
     })
   }
   

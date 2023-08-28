@@ -10,5 +10,9 @@
   "mtte.howtoToolTip": "See the available documentation (dynamic).",
   "mtte.index": "Index assets",
   "mtte.indexingMoulinette": "Moulinette indexing",
-  "mtte.localexport": "Export to Moulinette (local)"
+  "mtte.localexport": "Export to Moulinette (local)",
+  "mtte.page": "page",
+  "mtte.pages": "pages",
+  "mtte.result": "result",
+  "mtte.results": "results"
 }
