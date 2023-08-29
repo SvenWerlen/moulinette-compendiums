@@ -5,6 +5,9 @@ import { MoulinetteCompendiumsUtil } from "./moulinette-compendiums-util.js"
  */
 export class MoulinetteCompendiums extends game.moulinette.applications.MoulinetteForgeModule {
   
+  static INDEX_FOLDER = "moulinette"
+  static INDEX_FILE = "index-compendiums.json"
+
   constructor() {
     super()
   }
@@ -26,73 +29,10 @@ export class MoulinetteCompendiums extends game.moulinette.applications.Moulinet
       return duplicate(this.assetsPacks)
     }
 
-    // fetch from cache
-    if(game.moulinette.cache.hasData("compendiums")) {
-      const data = game.moulinette.cache.getData("compendiums");
-      this.assetsPacks = data.packs
-      this.assets = data.assets
-      return duplicate(this.assetsPacks)
-    }
-
-    // read all compendiums 
-    this.assetsPacks = []
-    this.assets = []
-    let idx = 0
-    
-    for(const p of game.packs) {
-      SceneNavigation.displayProgressBar({label: game.i18n.localize("mtte.indexingMoulinette"), pct: Math.round((idx / game.packs.size)*100)});
-    
-      // retrieve creator/publisher
-      let creatorName = "??"
-      // compendium from system => creator = name of the system
-      if(p.metadata.packageType == "system") {
-        creatorName = game.system.title
-      }
-      // compendium from module => creator = title of the module
-      else if(p.metadata.packageType == "module") {
-        creatorName = game.modules.get(p.metadata.packageName).title
-      }
-      // compendium from world => creator = 
-      else if(p.metadata.packageType == "world") {
-        creatorName = game.world.title
-      }
-
-      const elements = await p.getDocuments()
-      const packData = {
-        idx: idx,
-        packId: p.metadata.id,
-        publisher: creatorName,
-        name: p.metadata.label,
-        type: p.metadata.type,
-        path: "",
-        count: elements.length,
-        isLocal: true,
-      }
-      this.assetsPacks.push(packData)
-
-      // retrieve all folders to build path
-      const folder = MoulinetteCompendiums.generateFoldersPath(p.folder)
-
-      // read all assets
-      for(const el of elements) {
-        this.assets.push({ 
-          id: el._id,
-          pack: idx,
-          img : MoulinetteCompendiumsUtil.getThumbnail(el, packData.type),
-          filename: folder, // use for folder path
-          name: el.name,
-          infos: MoulinetteCompendiumsUtil.getAdditionalInfo(el, packData.type)
-        })
-      }
-
-      idx++;
-    }
-
-    SceneNavigation.displayProgressBar({label: game.i18n.localize("mtte.indexingMoulinette"), pct: 100});
-
-    // store in cache
-    game.moulinette.cache.setData("compendiums", { packs: this.assetsPacks, assets: this.assets })
-
+    // fetch from index
+    const data = await MoulinetteCompendiums.indexAllCompendiums()
+    this.assetsPacks = data.packs
+    this.assets = data.assets
     return duplicate(this.assetsPacks)
   }
   
@@ -184,7 +124,7 @@ export class MoulinetteCompendiums extends game.moulinette.applications.Moulinet
       typeIcon = MoulinetteCompendiumsUtil.ASSET_ICON[pack.type]
     }
     
-    let html = `<div class="asset" data-idx="${idx}" data-path="${r.filename}" ${folderHTML}>`
+    let html = `<div class="asset draggable" data-idx="${idx}" data-path="${r.filename}" ${folderHTML}>`
     // entry icon
     html += `<img width="75" height="75" src="${thumbSrc}"/>`
     // entry title
@@ -209,14 +149,6 @@ export class MoulinetteCompendiums extends game.moulinette.applications.Moulinet
 
     return html + "</div>"
   }
-  
-  /**
-   * Recursively build the folder path
-   */
-  static generateFoldersPath(folder) {
-    if(!folder) return ""
-    return MoulinetteCompendiums.generateFoldersPath(folder.folder) + folder.name + "/"
-  }
 
   /**
    * Implements listeners
@@ -240,12 +172,9 @@ export class MoulinetteCompendiums extends game.moulinette.applications.Moulinet
         return console.error("Moulinette Compendiums | Invalid index for asset", assetIdx)
       }
       const searchResult = this.searchResults[assetIdx-1]
-      const pack = this.assetsPacks[searchResult.pack]
-      const compendium = game.packs.get(pack.packId)
-      compendium.getIndex().then(() => {
-        console.log(compendium.get(searchResult.id))
-        compendium.get(searchResult.id).sheet.render(true)
-      })
+      if(searchResult) {
+        fromUuid(searchResult.id).then((el) => el.sheet.render(true))
+      }
     })
 
     // Click on icon action => execute
@@ -281,6 +210,158 @@ export class MoulinetteCompendiums extends game.moulinette.applications.Moulinet
     if(classList.contains("index")) {
       console.log("HERE")
     }
+  }
 
+  onDragStart(ev) {
+    const element = ev.currentTarget;
+    const assetIdx = $(element).data("idx");
+    if(!assetIdx || assetIdx <= 0 || assetIdx > this.searchResults.length) {
+      return
+    }
+      
+    // invalid action
+    const asset = this.searchResults[assetIdx-1]
+    const pack = this.assetsPacks[asset.pack]
+    ev.dataTransfer.setData("text/plain", JSON.stringify({
+      type: pack.type,
+      uuid: asset.id
+    }));
+  }
+
+  /**
+   * Recursively build the folder path
+   */
+  static generateFoldersPath(folder) {
+    if(!folder) return ""
+    return MoulinetteCompendiums.generateFoldersPath(folder.folder) + folder.name + "/"
+  }
+  
+  /**
+   * This function browses all compendiums and index all the content
+   * - Indices are kept in a file /moulinette/index-compendiums.json
+   * - Automatically updates indices of existing compendiums for which the version doesn't match
+   * - Index is shared among all worlds of the installation
+   * Returns the index based on enabled compendiums
+   */
+  static async indexAllCompendiums() {
+
+    console.log("Moulinette Compendiums | Indexing all active compendiums in world...")
+    console.groupCollapsed()
+
+    // read existing index
+    let indexData = {}
+    const noCache = "?ms=" + new Date().getTime();
+    const indexPath = `${MoulinetteCompendiums.INDEX_FOLDER}/${MoulinetteCompendiums.INDEX_FILE}`
+    const response = await fetch(indexPath + noCache, {cache: "no-store"}).catch(function(e) {
+      console.warn(`Moulinette Compendiums | Index couldn't be downloaded (${indexPath})`, e)
+    });
+    if(response && response.status == 200) {
+      indexData = await response.json();
+    }
+
+    // read all compendiums 
+    let updated = false
+    const assetsPacks = []
+    const assets = []
+    let idx = 0
+    
+    for(const p of game.packs) {
+      SceneNavigation.displayProgressBar({label: game.i18n.localize("mtte.indexingMoulinette"), pct: Math.round((idx / game.packs.size)*100)});
+    
+      let packId = p.metadata.id
+      let version = null
+      // retrieve creator/publisher
+      let creatorName = "??"
+      // compendium from system => creator = name of the system
+      if(p.metadata.packageType == "system") {
+        version = game.system.version
+        creatorName = game.system.title
+      }
+      // compendium from module => creator = title of the module
+      else if(p.metadata.packageType == "module") {
+        const module = game.modules.get(p.metadata.packageName)
+        creatorName = module.title
+        version = module.version
+      }
+      // compendium from world => creator = title of the world
+      else if(p.metadata.packageType == "world") {
+        creatorName = game.world.title
+        packId = game.world.id + "." + packId // distinguish two same packs in different worlds
+      }
+
+      // check if already in index data (world compendiums must always re-indexed because they have no version)
+      if(packId in indexData && version && indexData[packId].version == version) {
+        console.log(`Moulinette Compendiums | Re-using existing index for ${packId} (v. ${version})... (remove index ${indexPath} to force re-indexing)`)
+        // retrieve pack and assets
+        const pack = duplicate(indexData[packId].pack)
+        pack.idx = idx,
+        assetsPacks.push(pack)
+        const indexedAssets = duplicate(indexData[packId].assets)
+        for(const a of indexedAssets) {
+          a.pack = idx
+          assets.push(a)
+        }
+        idx++
+        continue
+      }
+      
+      const elements = await p.getDocuments()
+      const packData = {
+        packId: p.metadata.id,
+        publisher: creatorName,
+        name: p.metadata.label,
+        type: p.metadata.type,
+        path: "",
+        count: elements.length,
+        isLocal: true,
+      }
+
+      // store in index (if not local)
+      if(p.metadata.packageType != "world") {
+        indexData[packId] = {
+          version: version,
+          pack: duplicate(packData),
+          assets: []
+        }
+        updated = true
+      }
+      packData.idx = idx
+      assetsPacks.push(packData)
+
+      // retrieve all folders to build path
+      const folder = MoulinetteCompendiums.generateFoldersPath(p.folder)
+
+      // read all assets
+      for(const el of elements) {
+        const asset = { 
+          id: el.uuid,
+          img : MoulinetteCompendiumsUtil.getThumbnail(el, packData.type),
+          filename: folder, // use for folder path
+          name: el.name,
+          infos: MoulinetteCompendiumsUtil.getAdditionalInfo(el, packData.type)
+        }
+        // store in index (if not local)
+        if(p.metadata.packageType != "world") {
+          indexData[packId].assets.push(duplicate(asset))
+        }
+        asset.pack = idx
+        assets.push(asset)
+      }
+
+      idx++;
+    }
+
+    SceneNavigation.displayProgressBar({label: game.i18n.localize("mtte.indexingMoulinette"), pct: 100});
+
+    // store index if updated
+    if(updated) {
+      await game.moulinette.applications.MoulinetteFileUtil.uploadFile(
+        new File([JSON.stringify(indexData)], MoulinetteCompendiums.INDEX_FILE, { type: "application/json", lastModified: new Date() }), 
+        MoulinetteCompendiums.INDEX_FILE, MoulinetteCompendiums.INDEX_FOLDER, true)
+    }
+
+    console.groupEnd()
+
+    return { packs: assetsPacks, assets: assets }
   }
 }
