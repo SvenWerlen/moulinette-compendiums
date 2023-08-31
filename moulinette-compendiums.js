@@ -24,8 +24,8 @@ Hooks.once("ready", async function () {
       description: game.i18n.localize("mtte.compendiumsDescription"),
       instance: new moduleClass(),
       actions: [
-        {id: "index", icon: "fas fa-cogs" ,name: game.i18n.localize("mtte.index"), help: game.i18n.localize("mtte.indexToolTip") },
-        {id: "howto", icon: "fas fa-question-circle" ,name: game.i18n.localize("mtte.howto"), help: game.i18n.localize("mtte.howtoToolTip") }
+        //{id: "index", icon: "fas fa-cogs" ,name: game.i18n.localize("mtte.index"), help: game.i18n.localize("mtte.indexToolTip") },
+        //{id: "howto", icon: "fas fa-question-circle" ,name: game.i18n.localize("mtte.howto"), help: game.i18n.localize("mtte.howtoToolTip") }
       ]
     })
 
