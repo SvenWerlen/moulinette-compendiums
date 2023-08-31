@@ -14,6 +14,10 @@ export class MoulinetteCompendiums extends game.moulinette.applications.Moulinet
   
   supportsWholeWordSearch() { return true }
 
+  supportsPlayersMode() {
+    return game.settings.get("moulinette-compendiums", "enable4players")
+  }
+
   clearCache() {
     this.assets = null
     this.assetsPacks = null
@@ -131,9 +135,12 @@ export class MoulinetteCompendiums extends game.moulinette.applications.Moulinet
     const titleHover = r.name.length > 25 ? `title="${r.name}"` : "" // show title on mouse over (but only if length > 25)
     html += `<div class="details"><div class="title" ${titleHover}>${r.name}</div>`
     // entry additional informations
-    r.infos.data.forEach((data) => {
-      html += `<p>${data}</p>`
-    })
+    if(r.infos.text1) {
+      html += `<p>${r.infos.text1}</p>`
+    }
+    if(r.infos.text2) {
+      html += `<p>${r.infos.text2}</p>`
+    }
     // entry additional icons
     html += `<div class="icons">`
     r.infos.icons.forEach((icon) => {
@@ -188,9 +195,8 @@ export class MoulinetteCompendiums extends game.moulinette.applications.Moulinet
       }
       const searchResult = this.searchResults[assetIdx-1]
       const pack = this.assetsPacks[searchResult.pack]
-      const compendium = game.packs.get(pack.packId)
-      compendium.getIndex().then(() => {
-        MoulinetteCompendiumsUtil.executeAction(compendium.get(searchResult.id), pack.type)
+      fromUuid(searchResult.id).then((entry) => {
+        MoulinetteCompendiumsUtil.executeAction(entry, pack.type)
       })
       
       
@@ -218,7 +224,7 @@ export class MoulinetteCompendiums extends game.moulinette.applications.Moulinet
     if(!assetIdx || assetIdx <= 0 || assetIdx > this.searchResults.length) {
       return
     }
-      
+    
     // invalid action
     const asset = this.searchResults[assetIdx-1]
     const pack = this.assetsPacks[asset.pack]
@@ -268,6 +274,11 @@ export class MoulinetteCompendiums extends game.moulinette.applications.Moulinet
     for(const p of game.packs) {
       SceneNavigation.displayProgressBar({label: game.i18n.localize("mtte.indexingMoulinette"), pct: Math.round((idx / game.packs.size)*100)});
     
+      // check permission
+      if(!p.testUserPermission(game.user, "OBSERVER")) {
+        continue;
+      }
+
       let packId = p.metadata.id
       let version = null
       // retrieve creator/publisher
@@ -290,7 +301,7 @@ export class MoulinetteCompendiums extends game.moulinette.applications.Moulinet
       }
 
       // check if already in index data (world compendiums must always re-indexed because they have no version)
-      if(packId in indexData && version && indexData[packId].version == version) {
+      if(!game.moulinette.compendiums.reindex && packId in indexData && version && indexData[packId].version == version) {
         console.log(`Moulinette Compendiums | Re-using existing index for ${packId} (v. ${version})... (remove index ${indexPath} to force re-indexing)`)
         // retrieve pack and assets
         const pack = duplicate(indexData[packId].pack)

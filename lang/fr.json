@@ -1,4 +1,7 @@
 {
+  "mtte.compendiums": "Compendiums",
+  "mtte.configCompendiums4players": "Activer Compendiums pour les joueurs",
+  "mtte.configCompendiums4playersHint": "Permet aux joueurs d'utiliser Moulinette Compendiums.",
   "mtte.export": "Exporter vers Moulinette Cloud",
   "mtte.filterHasDrawings": "Avec dessins",
   "mtte.filterHasLights": "Avec lumières",

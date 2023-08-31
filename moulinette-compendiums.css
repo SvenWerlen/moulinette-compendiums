@@ -34,6 +34,10 @@
   border-radius: 5px;
 }
 
+.mtte .asset p {
+  margin: 2px 0px;
+}
+
 .mtte .asset .system {
   position: absolute;
   bottom: 0px;

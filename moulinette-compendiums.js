@@ -1,10 +1,21 @@
 Hooks.once("init", async function () {
   console.log("Moulinette Compendiums | Init")
 
+  game.settings.register("moulinette-compendiums", "enable4players", {
+    name: game.i18n.localize("mtte.configCompendiums4players"), 
+    hint: game.i18n.localize("mtte.configCompendiums4playersHint"), 
+    scope: "world",
+    config: true,
+    default: true,
+    type: Boolean
+  });
 })
 
 Hooks.once("ready", async function () {
-  if (game.user.isGM) {
+  // default options
+  game.moulinette.compendiums = {}
+
+  if(game.user.isGM || game.settings.get("moulinette-compendiums", "enable4players")) {
     const moduleClass = (await import("./modules/moulinette-compendiums.js")).MoulinetteCompendiums
     game.moulinette.forge.push({
       id: "compendiums",
@@ -22,6 +33,7 @@ Hooks.once("ready", async function () {
   }
 });
 
+/*
 Hooks.on("getCompendiumDirectoryFolderContext", (html, options) => {
   options.push({
     name: game.i18n.localize("mtte.export"),
@@ -45,4 +57,29 @@ Hooks.on("getCompendiumDirectoryFolderContext", (html, options) => {
       return true;
     },
   });
+});*/
+
+Hooks.on("renderSidebarTab", (app, html) => {
+  
+  // only available for GM and players if enabled
+  if(!game.user.isGM && !game.settings.get("moulinette-compendiums", "enable4players")) {
+    return
+  }
+  
+  if (app.id == 'compendium') {
+    const btn = $(
+        `<div class="header-actions action-buttons flexrow">
+            <button id="mtteCompendiumsOpen">
+              <i class="fas fa-atlas"></i> Moulinette Compendiums
+            </button>
+        </div>`
+    );
+    html.find(".directory-footer").append(btn);
+    btn.on("click",async event => {
+      // possible tabs: "gameicons", "imagesearch", "prefabs", "scenes", "sounds", "tiles" 
+      const tab = "compendiums" 
+      const forgeClass = game.moulinette.modules.find(m => m.id == "forge").class
+      new forgeClass(tab).render(true)
+    });
+  }
 });
