@@ -44,7 +44,7 @@
         "id": "moulinette-core",
         "type": "module",
         "compatibility": {
-          "minimum": "11.0.1"
+          "minimum": "11.4.0"
         }
       }
     ]
