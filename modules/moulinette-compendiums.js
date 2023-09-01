@@ -274,8 +274,12 @@ export class MoulinetteCompendiums extends game.moulinette.applications.Moulinet
     for(const p of game.packs) {
       SceneNavigation.displayProgressBar({label: game.i18n.localize("mtte.indexingMoulinette"), pct: Math.round((idx / game.packs.size)*100)});
     
-      // check permission
-      if(!p.testUserPermission(game.user, "OBSERVER")) {
+      // check permission (v11)
+      if(game.version.startsWith("11.") && !p.testUserPermission(game.user, "OBSERVER")) {
+        continue;
+      }
+      // check visibility (v10)
+      if(game.version.startsWith("10.") && !game.user.isGM && p.private) {
         continue;
       }
 
