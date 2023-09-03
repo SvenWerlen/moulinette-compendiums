@@ -251,8 +251,7 @@ export class MoulinetteCompendiums extends game.moulinette.applications.Moulinet
    */
   static async indexAllCompendiums() {
 
-    console.log("Moulinette Compendiums | Indexing all active compendiums in world...")
-    console.groupCollapsed()
+    console.groupCollapsed("Moulinette Compendiums | Indexing all active compendiums in world... (expand to see details)")
 
     // read existing index
     let indexData = {}
@@ -320,7 +319,13 @@ export class MoulinetteCompendiums extends game.moulinette.applications.Moulinet
         continue
       }
       
-      const elements = await p.getDocuments()
+      let elements
+      try {
+        elements = await p.getDocuments()
+      } catch(Error) {
+        console.warn(`Moulinette Compendiums | Unable to fetch documents from compendium ${p.metadata.label}. Skipping...`)
+        continue
+      }
       const packData = {
         packId: p.metadata.id,
         publisher: creatorName,
