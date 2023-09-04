@@ -1,3 +1,4 @@
+import { MoulinetteCompendiumsCloudUtil } from "./moulinette-compendiums-util-cloud.js"
 import { MoulinetteCompendiumsUtil } from "./moulinette-compendiums-util.js"
 
 /**
@@ -37,6 +38,12 @@ export class MoulinetteCompendiums extends game.moulinette.applications.Moulinet
     const data = await MoulinetteCompendiums.indexAllCompendiums()
     this.assetsPacks = data.packs
     this.assets = data.assets
+
+    // fetch from Moulinette Cloud
+    const lastIdx = data.packs.length
+    const cloudPacks = await MoulinetteCompendiumsCloudUtil.getCloudPacks(lastIdx)
+    this.assetsPacks = this.assetsPacks.concat(cloudPacks)
+
     return duplicate(this.assetsPacks)
   }
   
@@ -55,6 +62,8 @@ export class MoulinetteCompendiums extends game.moulinette.applications.Moulinet
     
     const wholeWord = game.settings.get("moulinette", "wholeWordSearch")
     const searchTermsList = searchTerms.split(" ")
+    
+    // LOCAL SEARCH
     // filter list according to search terms and selected pack
     this.searchResults = this.assets.filter( t => {
       // pack doesn't match selection
@@ -71,6 +80,9 @@ export class MoulinetteCompendiums extends game.moulinette.applications.Moulinet
       }
       return true;
     })
+    // CLOUD SEARCH
+    const cloudAssets = await MoulinetteCompendiumsCloudUtil.searchCloudAssets(searchTerms, this.assetsPacks)
+    this.searchResults = this.searchResults.concat(cloudAssets)
 
     // sort results by name
     this.searchResults.sort((a,b) => a.name.localeCompare(b.name))
@@ -124,8 +136,9 @@ export class MoulinetteCompendiums extends game.moulinette.applications.Moulinet
     // thumbnail
     let thumbSrc = r.img ? r.img : "modules/moulinette-core/img/no-photo.webp"
     let typeIcon = "fa-solid fa-question"
-    if(pack.type in MoulinetteCompendiumsUtil.ASSET_ICON) {
-      typeIcon = MoulinetteCompendiumsUtil.ASSET_ICON[pack.type]
+    const type = r.type ? r.type : pack.type // type defined in asset (cloud) or on packs (local)
+    if(type in MoulinetteCompendiumsUtil.ASSET_ICON) {
+      typeIcon = MoulinetteCompendiumsUtil.ASSET_ICON[type]
     }
     
     let html = `<div class="asset draggable" data-idx="${idx}" data-path="${r.filename}" ${folderHTML}>`
@@ -171,16 +184,26 @@ export class MoulinetteCompendiums extends game.moulinette.applications.Moulinet
     });
 
     // Click on asset => open asset sheet
-    this.html.find(".asset").click(ev => {
+    const parent = this
+    this.html.find(".asset").click(async function(ev) {
       ev.preventDefault();
       const element = ev.currentTarget;
       const assetIdx = $(element).data("idx");
-      if(!assetIdx || assetIdx <= 0 || assetIdx > this.searchResults.length) {
+      if(!assetIdx || assetIdx <= 0 || assetIdx > parent.searchResults.length) {
         return console.error("Moulinette Compendiums | Invalid index for asset", assetIdx)
       }
-      const searchResult = this.searchResults[assetIdx-1]
+      const searchResult = parent.searchResults[assetIdx-1]
       if(searchResult) {
-        fromUuid(searchResult.id).then((el) => el.sheet.render(true))
+        const pack = parent.assetsPacks[searchResult.pack]
+        // search result is from local compendiums
+        if(pack.isLocal) {
+          fromUuid(searchResult.id).then((el) => el.sheet.render(true))
+        } 
+        // search result is from Moulinette Cloud
+        else {
+          const cloudAsset = await MoulinetteCompendiumsCloudUtil.fetchAsset(searchResult.id)
+          MoulinetteCompendiumsCloudUtil.importIntoMoulinetteCompendium(cloudAsset, pack, searchResult["type"])
+        }
       }
     })
 
@@ -283,6 +306,10 @@ export class MoulinetteCompendiums extends game.moulinette.applications.Moulinet
       }
 
       let packId = p.metadata.id
+      if(packId.startsWith("world.moulinette")) {
+        continue;
+      }
+      
       let version = null
       // retrieve creator/publisher
       let creatorName = "??"
