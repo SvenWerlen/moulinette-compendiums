@@ -1,5 +1,6 @@
 import { MoulinetteCompendiumsCloudUtil } from "./moulinette-compendiums-util-cloud.js"
 import { MoulinetteCompendiumsUtil } from "./moulinette-compendiums-util.js"
+import { MoulinetteCompendiumsPreview } from "./moulinette-compendiums-preview.js"
 
 /**
  * Moulinette Module for compendiums
@@ -41,6 +42,7 @@ export class MoulinetteCompendiums extends game.moulinette.applications.Moulinet
 
     // fetch from Moulinette Cloud
     const lastIdx = data.packs.length
+    const user = await game.moulinette.applications.Moulinette.getUser() // don't remove! Otherwise won't retrieve user session
     const cloudPacks = await MoulinetteCompendiumsCloudUtil.getCloudPacks(lastIdx)
     this.assetsPacks = this.assetsPacks.concat(cloudPacks)
 
@@ -81,7 +83,8 @@ export class MoulinetteCompendiums extends game.moulinette.applications.Moulinet
       return true;
     })
     // CLOUD SEARCH
-    const cloudAssets = await MoulinetteCompendiumsCloudUtil.searchCloudAssets(searchTerms, this.assetsPacks)
+    const packIds = packList ? packList.map(p => this.assetsPacks[p].packId) : null
+    const cloudAssets = await MoulinetteCompendiumsCloudUtil.searchCloudAssets(searchTerms, publisher, packIds, this.assetsPacks)
     this.searchResults = this.searchResults.concat(cloudAssets)
 
     // sort results by name
@@ -161,7 +164,7 @@ export class MoulinetteCompendiums extends game.moulinette.applications.Moulinet
     })
     html += "</div>"
     // entry type
-    html += `</div><div class="type"><i class="${typeIcon}" title="${pack.type}"></i></div>`
+    html += `</div><div class="type"><i class="${typeIcon}" title="${type}"></i></div>`
     // entry system (if specific)
     if(r.infos.system) {
       html += `<div class="system">${r.infos.system}</div>`
@@ -202,7 +205,8 @@ export class MoulinetteCompendiums extends game.moulinette.applications.Moulinet
         // search result is from Moulinette Cloud
         else {
           const cloudAsset = await MoulinetteCompendiumsCloudUtil.fetchAsset(searchResult.id)
-          MoulinetteCompendiumsCloudUtil.importIntoMoulinetteCompendium(cloudAsset, pack, searchResult["type"])
+          new MoulinetteCompendiumsPreview(parent, searchResult, cloudAsset, pack).render(true)
+          //MoulinetteCompendiumsCloudUtil.importIntoMoulinetteCompendium(cloudAsset, pack, searchResult["type"])
         }
       }
     })
@@ -309,7 +313,7 @@ export class MoulinetteCompendiums extends game.moulinette.applications.Moulinet
       if(packId.startsWith("world.moulinette")) {
         continue;
       }
-      
+
       let version = null
       // retrieve creator/publisher
       let creatorName = "??"

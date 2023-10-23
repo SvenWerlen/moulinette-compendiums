@@ -1,0 +1,35 @@
+<form autocomplete="off" onsubmit="event.preventDefault();">
+  <div class="body">
+    <h1>{{asset.name}}</h1>
+    <div class="compendium">
+      <img src="{{searchResult.fullImg}}"/>
+      <ul class="infos">
+        <li><b>Creator:</b> {{pack.publisher}}</li>
+        <li><b>Pack:</b> {{pack.name}}</li>
+        <li>
+          {{#if information}}
+          <b>{{localize "mtte.requiredTiers"}}</b>:
+          <ul>
+            {{#each information.tiers as |t|}}
+              <li>{{t.title}} ({{t.amount}} $USD)
+            {{/each}}
+          </ul>
+          {{/if}}
+        </li>
+      </ul>
+    </div>
+    <footer>
+      <div class="actions">
+        {{#if pack.hasAccess}}
+        <button class="import" title="{{localize "mtte.importAssetToolTip"}}"><i class="fas fa-file-import"></i> {{localize "mtte.importAsset"}}</button>
+        {{/if}}
+        {{#if information}}
+          {{#unless pack.hasAccess}}
+          <button class="subscribe"><i class="fas fa-external-link-alt"></i> {{localize "mtte.subscribe"}}</button>
+          {{/unless}}
+        {{/if}}
+        <button class="browsePack" title="{{localize "mtte.browseAssetPackToolTip"}}"><i class="fa-solid fa-folder-open"></i> {{localize "mtte.browseAssetPack"}}</button>
+      </div>
+    </footer>
+  </div>
+</form>

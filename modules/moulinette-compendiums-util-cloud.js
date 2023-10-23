@@ -25,7 +25,8 @@ export class MoulinetteCompendiumsCloudUtil {
           deps: [],
           count: r.count,
           isLocal: false,
-          isRemote: true
+          isRemote: true,
+          hasAccess: r.hasAccess
         }
         creators.push(packData)
       }
@@ -36,9 +37,9 @@ export class MoulinetteCompendiumsCloudUtil {
   /**
    * Executes a search on Moulinette Cloud
    */
-  static async searchCloudAssets(searchTerms, packs) {
+  static async searchCloudAssets(searchTerms, selCreator, selPacks, packs) {
     const client = new game.moulinette.applications.MoulinetteClient()
-    const results = await client.post("/api/compendiums/search", { query: searchTerms })
+    const results = await client.post("/api/compendiums/search", { query: searchTerms, creatorId: selCreator, packs: selPacks })
     const assets = []
     if(results.status == 200) {
       for(const r of results.data) {
@@ -48,10 +49,13 @@ export class MoulinetteCompendiumsCloudUtil {
           // 1) remplace DEP with path from pack
           // 2) replace image file with thumbnail
           // 3) add SAS if image is protected
-          const thumb = r["img"].replace("#DEP#", pack.path + "/").replace(/\.[^/.]+$/, "") + "_thumb.webp?" + (pack.sas ? pack.sas : "")
+          const thumb = r.img ? r.img.replace("#DEP#", pack.path + "/").replace(/\.[^/.]+$/, "") + "_thumb.webp?" + (pack.sas ? pack.sas : "") : null
+          const fullImage = r.img ? r.img.replace("#DEP#", pack.path + "/") + "?" + (pack.sas ? pack.sas : "") : null
+
           const asset = { 
             id: r.id,
             img : thumb,
+            fullImg : fullImage,
             filename: `${r.compendium}/`,
             type: r.type,
             pack: pack.idx,
