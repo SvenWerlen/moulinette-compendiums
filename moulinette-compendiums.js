@@ -1,3 +1,5 @@
+import { MoulinetteCompendiumsDefaults } from "./moulinette-compendiums-defaults.js";
+
 Hooks.once("init", async function () {
   console.log("Moulinette Compendiums | Init")
 
@@ -13,7 +15,10 @@ Hooks.once("init", async function () {
 
 Hooks.once("ready", async function () {
   // default options
-  game.moulinette.compendiums = {}
+  game.moulinette.compendiums = {
+    meta: MoulinetteCompendiumsDefaults.getDefaultMetaData(),
+    previews: MoulinetteCompendiumsDefaults.getDefaultPreviews()
+  }
 
   if(game.user.isGM || game.settings.get("moulinette-compendiums", "enable4players")) {
     const moduleClass = (await import("./modules/moulinette-compendiums.js")).MoulinetteCompendiums

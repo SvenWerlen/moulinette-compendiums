@@ -22,8 +22,8 @@ export class MoulinetteCompendiumsPreview extends FormApplication {
       classes: ["mtte", "forge", "preview"],
       title: game.i18n.localize("mtte.compendiumPreview"),
       template: "modules/moulinette-compendiums/templates/preview.hbs",
-      width: 500,
-      height: 300,
+      width: 800,
+      height: 600,
       closeOnSubmit: false,
       submitOnClose: false,
       resizable: true

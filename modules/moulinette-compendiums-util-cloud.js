@@ -1,6 +1,8 @@
 /**
  * Moulinette Compendium utils for Moulinette Cloud
  */
+import { MoulinetteCompendiumsUtil } from "./moulinette-compendiums-util.js"
+
 export class MoulinetteCompendiumsCloudUtil {
 
   static ASSET_TYPES_SUPPORTED = ["Actor", "Item", "JournalEntry", "RollTable", "Scene", "Macro", "Adventure", "Card", "Playlist"]
@@ -39,7 +41,12 @@ export class MoulinetteCompendiumsCloudUtil {
    */
   static async searchCloudAssets(searchTerms, selCreator, selPacks, packs) {
     const client = new game.moulinette.applications.MoulinetteClient()
-    const results = await client.post("/api/compendiums/search", { query: searchTerms, creatorId: selCreator, packs: selPacks })
+    const results = await client.post("/api/compendiums/search", { 
+      query: searchTerms, 
+      creatorId: selCreator, 
+      packs: selPacks,
+      meta: game.moulinette.compendiums.meta
+    })
     const assets = []
     if(results.status == 200) {
       for(const r of results.data) {
@@ -55,12 +62,12 @@ export class MoulinetteCompendiumsCloudUtil {
           const asset = { 
             id: r.id,
             img : thumb,
-            fullImg : fullImage,
+            fullImg : pack.hasAccess ? fullImage : thumb,
             filename: `${r.compendium}/`,
             type: r.type,
             pack: pack.idx,
             name: r.name,
-            infos: { text1: "", text2: "", icons: []}
+            infos: MoulinetteCompendiumsUtil.getAdditionalInfoFromMeta(r)
           }
           assets.push(asset)
         }

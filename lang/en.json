@@ -5,8 +5,6 @@
   "mtte.compendiums": "Compendiums",
   "mtte.configCompendiums4players": "Enable Compendiums for players",
   "mtte.configCompendiums4playersHint": "Allows players to use Moulinette Compendiums.",
-  "mtte.downloadAsset": "Download",
-  "mtte.downloadAssetToolTip": "Download the asset into Moulinette's compendium (in your world)",
   "mtte.export": "Export to Moulinette Cloud",
   "mtte.filterHasDrawings": "Has Drawings",
   "mtte.filterHasLights": "Has Lights",
@@ -19,10 +17,13 @@
   "mtte.importAsset": "Import",
   "mtte.importAssetToolTip": "Download and import the asset into your world",
   "mtte.index": "Index assets",
-  "mtte.indexingMoulinette": "Moulinette indexing",
+  "mtte.indexCompendiums": "Indexing {count} compendium(s)...",
+  "mtte.indexCompendiumsMessage": "{count} compendiums indexed",
   "mtte.localexport": "Export to Moulinette (local)",
   "mtte.page": "page",
   "mtte.pages": "pages",
+  "mtte.requiredTiers": "Required tier (Patreon)",
   "mtte.result": "result",
-  "mtte.results": "results"
+  "mtte.results": "results",
+  "mtte.subscribe": "Subscribe"
 }

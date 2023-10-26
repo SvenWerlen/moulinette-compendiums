@@ -11,7 +11,7 @@
 
 .mtte.forge .asset img {
   border: none;
-  object-fit: cover;
+  object-fit: contain;
   object-position: 50% 0;
 }
 
@@ -118,6 +118,11 @@
   margin: 10px;
   max-width: calc(100% - 200px);
   /** box-shadow: -25px -25px 0 -20px #f79007, 25px 25px 0 -20px #f79007; **/
+}
+
+#moulinette-compendiumpreview .compendium img.preview {
+  max-width: 100px;
+  max-height: 100px;
 }
 
 #moulinette-compendiumpreview footer {

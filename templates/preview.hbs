@@ -2,7 +2,7 @@
   <div class="body">
     <h1>{{asset.name}}</h1>
     <div class="compendium">
-      <img src="{{searchResult.fullImg}}"/>
+      <img src="{{searchResult.fullImg}}" {{#unless pack.hasAccess}}class="preview"{{/unless}}/>
       <ul class="infos">
         <li><b>Creator:</b> {{pack.publisher}}</li>
         <li><b>Pack:</b> {{pack.name}}</li>

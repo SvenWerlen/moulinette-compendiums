@@ -225,8 +225,6 @@ export class MoulinetteCompendiums extends game.moulinette.applications.Moulinet
       fromUuid(searchResult.id).then((entry) => {
         MoulinetteCompendiumsUtil.executeAction(entry, pack.type)
       })
-      
-      
     })
   }
   
@@ -296,9 +294,13 @@ export class MoulinetteCompendiums extends game.moulinette.applications.Moulinet
     const assetsPacks = []
     const assets = []
     let idx = 0
+    let processed = 0
     
+    const progressbar = (new game.moulinette.applications.MoulinetteProgress(game.i18n.format("mtte.indexCompendiums", { count: game.packs.size})))
+    progressbar.render(true)
+
     for(const p of game.packs) {
-      SceneNavigation.displayProgressBar({label: game.i18n.localize("mtte.indexingMoulinette"), pct: Math.round((idx / game.packs.size)*100)});
+      progressbar.setProgress(Math.round((idx / game.packs.size)*100), game.i18n.format("mtte.indexCompendiumsMessage", { count: processed++ }))
     
       // check permission (v11)
       if(game.version.startsWith("11.") && !p.testUserPermission(game.user, "OBSERVER")) {
@@ -384,12 +386,18 @@ export class MoulinetteCompendiums extends game.moulinette.applications.Moulinet
 
       // read all assets
       for(const el of elements) {
+        const entry = {
+          type: packData.type,
+          system: game.system.id,
+          meta: MoulinetteCompendiumsUtil.generateMetaFromLocal(el, packData.type)
+        }
         const asset = { 
           id: el.uuid,
           img : MoulinetteCompendiumsUtil.getThumbnail(el, packData.type),
           filename: folder, // use for folder path
           name: el.name,
-          infos: MoulinetteCompendiumsUtil.getAdditionalInfo(el, packData.type)
+          //infos: MoulinetteCompendiumsUtil.getAdditionalInfo(el, packData.type)
+          infos: MoulinetteCompendiumsUtil.getAdditionalInfoFromMeta(entry)
         }
         // store in index (if not local)
         if(p.metadata.packageType != "world") {
@@ -402,7 +410,7 @@ export class MoulinetteCompendiums extends game.moulinette.applications.Moulinet
       idx++;
     }
 
-    SceneNavigation.displayProgressBar({label: game.i18n.localize("mtte.indexingMoulinette"), pct: 100});
+    progressbar.setProgress(100, game.i18n.format("mtte.indexCompendiumsMessage", { count: processed++ }))
 
     // store index if updated
     if(updated) {

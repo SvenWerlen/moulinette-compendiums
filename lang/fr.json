@@ -5,8 +5,6 @@
   "mtte.compendiums": "Compendiums",
   "mtte.configCompendiums4players": "Activer Compendiums pour les joueurs",
   "mtte.configCompendiums4playersHint": "Permet aux joueurs d'utiliser Moulinette Compendiums.",
-  "mtte.downloadAsset": "Télécharger",
-  "mtte.downloadAssetToolTip": "Télécharge le contenu dans le compendium Moulinette (de votre monde)",
   "mtte.export": "Exporter vers Moulinette Cloud",
   "mtte.filterHasDrawings": "Avec dessins",
   "mtte.filterHasLights": "Avec lumières",
@@ -19,10 +17,13 @@
   "mtte.importAsset": "Importer",
   "mtte.importAssetToolTip": "Télécharge et importe le contenu dans votre monde",
   "mtte.index": "Indexer",
-  "mtte.indexingMoulinette": "Indexation de Moulinette",
+  "mtte.indexCompendiums": "Indexe {count} compendium(s)...",
+  "mtte.indexCompendiumsMessage": "{count} compendiums indexés",
   "mtte.localexport": "Exporter vers Moulinette (local)",
   "mtte.page": "page",
   "mtte.pages": "pages",
+  "mtte.requiredTiers": "Abonnement requis (Patreon)",
   "mtte.result": "résultat",
-  "mtte.results": "résultats"
+  "mtte.results": "résultats",
+  "mtte.subscribe": "S'abonner"
 }
