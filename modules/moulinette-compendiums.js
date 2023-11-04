@@ -143,6 +143,10 @@ export class MoulinetteCompendiums extends game.moulinette.applications.Moulinet
     if(type in MoulinetteCompendiumsUtil.ASSET_ICON) {
       typeIcon = MoulinetteCompendiumsUtil.ASSET_ICON[type]
     }
+    if(type == "JournalEntry") {
+      typeIcon = null
+      thumbSrc = "modules/moulinette-compendiums/img/notebook.svg"
+    }
     
     let html = `<div class="asset draggable" data-idx="${idx}" data-path="${r.filename}" ${folderHTML}>`
     // entry icon
@@ -164,7 +168,10 @@ export class MoulinetteCompendiums extends game.moulinette.applications.Moulinet
     })
     html += "</div>"
     // entry type
-    html += `</div><div class="type"><i class="${typeIcon}" title="${type}"></i></div>`
+    html += "</div>"
+    if(typeIcon) {
+      html += `<div class="type"><i class="${typeIcon}" title="${type}"></i></div>`
+    }
     // entry system (if specific)
     if(r.infos.system) {
       html += `<div class="system">${r.infos.system}</div>`
@@ -206,7 +213,6 @@ export class MoulinetteCompendiums extends game.moulinette.applications.Moulinet
         else {
           const cloudAsset = await MoulinetteCompendiumsCloudUtil.fetchAsset(searchResult.id)
           new MoulinetteCompendiumsPreview(parent, searchResult, cloudAsset, pack).render(true)
-          //MoulinetteCompendiumsCloudUtil.importIntoMoulinetteCompendium(cloudAsset, pack, searchResult["type"])
         }
       }
     })
@@ -239,7 +245,8 @@ export class MoulinetteCompendiums extends game.moulinette.applications.Moulinet
   async onAction(classList) {
     // ACTION - INDEX
     if(classList.contains("index")) {
-      console.log("HERE")
+      await MoulinetteCompendiums.indexAllCompendiums(true)
+      return true
     }
   }
 
@@ -250,13 +257,22 @@ export class MoulinetteCompendiums extends game.moulinette.applications.Moulinet
       return
     }
     
-    // invalid action
+    // action
     const asset = this.searchResults[assetIdx-1]
     const pack = this.assetsPacks[asset.pack]
-    ev.dataTransfer.setData("text/plain", JSON.stringify({
-      type: pack.type,
-      uuid: asset.id
-    }));
+    if(pack.isRemote) {
+      ev.dataTransfer.setData("text/plain", JSON.stringify({
+        source: "mtte-compendiums",
+        type: asset.type,
+        pack: pack,
+        assetId: asset.id
+      }));
+    } else {
+      ev.dataTransfer.setData("text/plain", JSON.stringify({
+        type: pack.type,
+        uuid: asset.id
+      }));
+    }
   }
 
   /**
@@ -274,7 +290,7 @@ export class MoulinetteCompendiums extends game.moulinette.applications.Moulinet
    * - Index is shared among all worlds of the installation
    * Returns the index based on enabled compendiums
    */
-  static async indexAllCompendiums() {
+  static async indexAllCompendiums(reindex = false) {
 
     console.groupCollapsed("Moulinette Compendiums | Indexing all active compendiums in world... (expand to see details)")
 
@@ -337,7 +353,7 @@ export class MoulinetteCompendiums extends game.moulinette.applications.Moulinet
       }
 
       // check if already in index data (world compendiums must always re-indexed because they have no version)
-      if(!game.moulinette.compendiums.reindex && packId in indexData && version && indexData[packId].version == version) {
+      if(!reindex && packId in indexData && version && indexData[packId].version == version) {
         console.log(`Moulinette Compendiums | Re-using existing index for ${packId} (v. ${version})... (remove index ${indexPath} to force re-indexing)`)
         // retrieve pack and assets
         const pack = duplicate(indexData[packId].pack)

@@ -4,10 +4,11 @@
     <div class="compendium">
       <img src="{{searchResult.fullImg}}" {{#unless pack.hasAccess}}class="preview"{{/unless}}/>
       <ul class="infos">
-        <li><b>Creator:</b> {{pack.publisher}}</li>
-        <li><b>Pack:</b> {{pack.name}}</li>
+        <li class="main"><b>Creator:</b> {{pack.publisher}}</li>
+        <li class="main"><b>Pack:</b> {{pack.name}}</li>
         <li>
           {{#if information}}
+          <hr>
           <b>{{localize "mtte.requiredTiers"}}</b>:
           <ul>
             {{#each information.tiers as |t|}}

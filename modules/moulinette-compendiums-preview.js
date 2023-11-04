@@ -1,3 +1,5 @@
+import { MoulinetteCompendiumsCloudUtil } from "./moulinette-compendiums-util-cloud.js";
+
 /*************************
  * Preview a compendium
  *************************/
@@ -10,9 +12,9 @@ export class MoulinetteCompendiumsPreview extends FormApplication {
     this.asset = duplicate(asset);
     this.pack = duplicate(pack);
     
-    console.log(this.searchResult)
-    console.log(this.asset)
-    console.log(this.pack)
+    //console.log(this.searchResult)
+    //console.log(this.asset)
+    //console.log(this.pack)
 
   }
 
@@ -63,19 +65,7 @@ export class MoulinetteCompendiumsPreview extends FormApplication {
       }
     }
     else if(source.classList.contains("import")) {
-      // retrieve all the dependencies to be downloaded
-      const assetAsString = JSON.stringify(this.asset)
-      const deps = assetAsString.match(/"#DEP#[^"]+/g)
-      // download all dependencies
-      const toDownload = []
-      for(const dep of deps) {
-        toDownload.push(dep.substring(6))
-      }
-      const sas = this.pack.sas ? `?${this.pack.sas}` : ""
-      const destPath = game.moulinette.applications.MoulinetteFileUtil.getMoulinetteBasePath("compendiums", this.pack.publisher, this.pack.name)
-      await game.moulinette.applications.MoulinetteFileUtil.downloadDependencies(toDownload, this.pack.path, sas, destPath)
-      // replace DEP paths
-      const data = JSON.parse(assetAsString.replace("#DEP#", destPath))
+      const data = await MoulinetteCompendiumsCloudUtil.downloadDependencies(this.asset, this.pack)
       // create new asset
       const documentClass = getDocumentClass(this.searchResult.type)
       const doc = await documentClass.create(data)

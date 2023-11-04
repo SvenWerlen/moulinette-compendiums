@@ -109,7 +109,13 @@
 }
 
 #moulinette-compendiumpreview .compendium .infos {
+  list-style: none;
   min-width: 200px
+}
+
+#moulinette-compendiumpreview .compendium .infos .main {
+  font-size: 18px;
+  margin: 0px;
 }
 
 #moulinette-compendiumpreview .compendium img {

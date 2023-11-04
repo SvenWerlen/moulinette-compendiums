@@ -100,7 +100,7 @@ export class MoulinetteCompendiumsDefaults {
             if(cr == 0.25) cr = "1/4"
             if(cr == 0.5) cr = "1/2"
             infos.text1 = `CR ${cr} &nbsp;<i class="fa-solid fa-heart"></i> ${meta.hp}`
-            infos.text2 = `<i class="fa-solid fa-shield"></i> ${meta.ac} &nbsp;<i class="fa-solid fa-shoe-prints"></i> ${meta.walk} ${meta.units}`
+            infos.text2 = `<i class="fa-solid fa-shield"></i> ${meta.ac ? meta.ac : "?"} &nbsp;<i class="fa-solid fa-shoe-prints"></i> ${meta.walk} ${meta.units}`
           }
           return infos
         }

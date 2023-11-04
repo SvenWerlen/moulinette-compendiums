@@ -1,3 +1,4 @@
+import { MoulinetteCompendiumsCloudUtil } from "./modules/moulinette-compendiums-util-cloud.js";
 import { MoulinetteCompendiumsDefaults } from "./moulinette-compendiums-defaults.js";
 
 Hooks.once("init", async function () {
@@ -29,40 +30,35 @@ Hooks.once("ready", async function () {
       description: game.i18n.localize("mtte.compendiumsDescription"),
       instance: new moduleClass(),
       actions: [
-        //{id: "index", icon: "fas fa-cogs" ,name: game.i18n.localize("mtte.index"), help: game.i18n.localize("mtte.indexToolTip") },
-        //{id: "howto", icon: "fas fa-question-circle" ,name: game.i18n.localize("mtte.howto"), help: game.i18n.localize("mtte.howtoToolTip") }
+        {id: "index", icon: "fas fa-cogs" ,name: game.i18n.localize("mtte.indexComp"), help: game.i18n.localize("mtte.indexCompToolTip") },
       ]
     })
 
     console.log("Moulinette Compendiums | Module loaded")
   }
+
+  // replace default FVTT implementation for Items
+  Item.implementation.fromDropDataOrig = Item.implementation.fromDropData
+  Item.implementation.fromDropData = async function(data, options={}) { 
+    await MoulinetteCompendiumsCloudUtil.handleDragAndDrop(data)
+    return await Item.implementation.fromDropDataOrig(data, options)
+  }
+
+  // replace default FVTT implementation for Macros
+  Macro.implementation.fromDropDataOrig = Macro.implementation.fromDropData
+  Macro.implementation.fromDropData = async function(data, options={}) { 
+    await MoulinetteCompendiumsCloudUtil.handleDragAndDrop(data)
+    return await Macro.implementation.fromDropDataOrig(data, options)
+  }
+
+  // replace default FVTT implementation for JournalEntry
+  JournalEntry.implementation.fromDropDataOrig = JournalEntry.implementation.fromDropData
+  JournalEntry.implementation.fromDropData = async function(data, options={}) { 
+    await MoulinetteCompendiumsCloudUtil.handleDragAndDrop(data)
+    return await JournalEntry.implementation.fromDropDataOrig(data, options)
+  }
 });
 
-/*
-Hooks.on("getCompendiumDirectoryFolderContext", (html, options) => {
-  options.push({
-    name: game.i18n.localize("mtte.export"),
-    icon: '<i class="fas fa-cloud-upload-alt"></i>',
-    callback: async function(li) {
-      //const folder = game.folders.get($(li).closest("li").data("folderId"))
-      //new MoulinetteExport(folder).render(true)
-    },
-    condition: li => {
-      return true;
-    },
-  });
-  options.push({
-    name: game.i18n.localize("mtte.localexport"),
-    icon: '<i class="fas fa-upload"></i>',
-    callback: async function(li) {
-      //const folder = game.folders.get($(li).closest("li").data("folderId"))
-      //new MoulinetteLocalExport(null, folder).render(true)
-    },
-    condition: li => {
-      return true;
-    },
-  });
-});*/
 
 Hooks.on("renderSidebarTab", (app, html) => {
   

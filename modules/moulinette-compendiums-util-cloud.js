@@ -123,51 +123,38 @@ export class MoulinetteCompendiumsCloudUtil {
   }
 
   /**
-   * Import an asset into the compendium
+   * Download dependencies
    */
-  static async importIntoMoulinetteCompendium(asset, pack, type) {
-    if(!asset) return
-    const compendium = await MoulinetteCompendiumsCloudUtil.getMoulinetteCompendium(type)
-    if(compendium) {
-      // prepare asset for download
-      const downloadAsset = { data: { deps: [] }, sas: pack.sas ? pack.sas : "" }
-
-      // retrieve all dependencies
-      const dataAsString = JSON.stringify(asset)
-      const regex = /#DEP#[^"]+/g;
-      const matches = dataAsString.match(regex);
-      for(const m of matches) {
-        downloadAsset.data.deps.push(m.substring(5))
+  static async downloadDependencies(asset, pack) {
+    // retrieve all the dependencies to be downloaded
+    const assetAsString = JSON.stringify(asset)
+    const deps = assetAsString.match(/"#DEP#[^"]+/g)
+    // download all dependencies
+    const toDownload = []
+    if(deps) {
+      for(const dep of deps) {
+        toDownload.push(dep.substring(6))
       }
-
-      // download all dependencies
-      const newPaths = await game.moulinette.applications.MoulinetteFileUtil.downloadAssetDependencies(downloadAsset, pack, "compendium")
-      
-      // replace all dependencies
-      const cleanAsset = JSON.parse(dataAsString.replaceAll("#DEP#", newPaths[0]))
-
-      // find folder structure within the compendium
-      let folderCreator = compendium.folders.find((f) => !f.parent && f.name == pack.publisher)
-      if(!folderCreator) {
-        folderCreator = await Folder.create({name: pack.publisher, type: type}, {pack: compendium.metadata.id})
-      }
-      let folderPack = folderCreator.children.find((f) => f.folder?.name == pack.name)
-      if(!folderPack) {
-        folderPack = await Folder.create({name: pack.name, type: type, parent: folderCreator.id}, {pack: compendium.metadata.id})
-        // FVTT Bug! ID of folder same as parent => force refresh
-        folderPack = folderCreator.children.find((f) => f.folder?.name == pack.name)
-      }
-
-      // force import into that specific folder
-      cleanAsset.folder = folderPack.folder.id
-
-      // download all dependencies
-      console.log(pack)
-      //const assetDoc = compendium.createDocument(cleanAsset, {keepId: true})
-      //const importedDoc = await compendium.importDocument(assetDoc, {keepId: true}) // keepId doesn't work
-      //importedDoc.sheet.render(true)
     }
+    const sas = pack.sas ? `?${pack.sas}` : ""
+    const destPath = game.moulinette.applications.MoulinetteFileUtil.getMoulinetteBasePath("compendiums", pack.publisher, pack.name)
+
+    await game.moulinette.applications.MoulinetteFileUtil.downloadDependencies(toDownload, pack.path, sas, destPath)
+
+    return JSON.parse(assetAsString.replaceAll("#DEP#", destPath))
   }
 
+  /**
+   * Check and handle drag & drop data (only if source == "mtte-compendiums")
+   */
+  static async handleDragAndDrop(data) {
+    if("source" in data && data.source == "mtte-compendiums") {
+      const cloudAsset = await MoulinetteCompendiumsCloudUtil.fetchAsset(data.assetId)
+      if(cloudAsset) {
+        const newData = await MoulinetteCompendiumsCloudUtil.downloadDependencies(cloudAsset, data.pack)
+        data.data = newData  
+      }
+    }
+  }
 
 }
