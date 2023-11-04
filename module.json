@@ -1,7 +1,7 @@
 {
   "title": "Moulinette Compendiums (module)",
   "description": "This module for Moulinette adds capabilities for indexing local compendiums and download assets from Moulinette Cloud.",
-  "version": "11.0.3",
+  "version": "11.1.0",
   "esmodules": [
     "moulinette-compendiums.js"
   ],
@@ -29,7 +29,7 @@
     }
   ],
   "url": "https://github.com/SvenWerlen/moulinette-compendiums",
-  "download": "https://github.com/SvenWerlen/moulinette-compendiums/archive/v-11.0.3.zip",
+  "download": "https://github.com/SvenWerlen/moulinette-compendiums/archive/v-11.1.0.zip",
   "manifest": "https://raw.githubusercontent.com/SvenWerlen/moulinette-compendiums/main/module.json",
   "id": "moulinette-compendiums",
   "authors": [
@@ -44,7 +44,7 @@
         "id": "moulinette-core",
         "type": "module",
         "compatibility": {
-          "minimum": "11.4.0"
+          "minimum": "11.6.0"
         }
       }
     ]
