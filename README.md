@@ -8,12 +8,29 @@
 
 This is a submodule for [Moulinette Core](https://github.com/SvenWerlen/moulinette-core). See [Moulinette Core](https://github.com/SvenWerlen/moulinette-core) for an overview of all modules.
 
-## Browse and forge compendiums
+## Browse compendiums
 
-You're a GM (game master) preparing a new scenario? Moulinettelets you browse assets from local compendiums and from Moulinette Cloud. 
-* Search in the catalog
-* Have a look at the preview
-* Check the asset you want to import
+Moulinette enables a more user-friendly and efficient way to navigate the content of FoundryVTT compendiums.
+Moulinette automatically searches for all the content in locally installed modules as well as from creators you support and that are available on the Moulinette Cloud.
+
+![Browse compendiums](./docs/img/browse.jpg)
+_(Assets and artwork from <a href="https://www.patreon.com/abyssalbrews">AbyssalBrews</a>)_
+
+
+## The relevant information depending on the content type
+
+With Moulinette, you no longer need to open the sheet for each asset (item, actor, article, etc.) to find what you're looking for. The most relevant information is displayed according to the content type.
+
+![Browse compendiums](./docs/img/metadata.jpg)
+_(Assets and artwork from <a href="https://foundryvtt.com/packages/dnd5e">FoundryVTT (DnD5e system)</a>)_
+
+
+## Preview and import
+
+In just a few clicks, preview the desired content and import it into your world. Moulinette will take care of downloading all the necessary dependencies.
+![Browse compendiums](./docs/img/preview-import.jpg)
+_(Assets and artwork from <a href="https://www.patreon.com/tomcartos">Tom Cartos</a>)_
+
 
 ## <a name="install"/>Install the module
 
