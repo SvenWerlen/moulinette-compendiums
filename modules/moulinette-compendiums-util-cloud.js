@@ -56,7 +56,10 @@ export class MoulinetteCompendiumsCloudUtil {
           // 1) remplace DEP with path from pack
           // 2) replace image file with thumbnail
           // 3) add SAS if image is protected
-          const thumb = r.img ? r.img.replace("#DEP#", pack.path + "/").replace(/\.[^/.]+$/, "") + "_thumb.webp?" + (pack.sas ? pack.sas : "") : null
+          let thumb = r.img
+          if(r.img && r.img.startsWith("#DEP#")) {
+            thumb = r.img.replace("#DEP#", pack.path + "/").replace(/\.[^/.]+$/, "") + "_thumb.webp?" + (pack.sas ? pack.sas : "")
+          }
           const fullImage = r.img ? r.img.replace("#DEP#", pack.path + "/") + "?" + (pack.sas ? pack.sas : "") : null
 
           const asset = { 
