@@ -17,12 +17,23 @@
           </ul>
           {{/if}}
         </li>
+        {{#unless compatible}}
+        <li class="non-compatible">
+          <i class="fa-solid fa-triangle-exclamation"></i> {{localize "mtte.notcompatible"}} ({{searchResult.system}})
+        </li>
+        {{/unless}}
       </ul>
+      
     </div>
     <footer>
       <div class="actions">
         {{#if pack.hasAccess}}
-        <button class="import" title="{{localize "mtte.importAssetToolTip"}}"><i class="fas fa-file-import"></i> {{localize "mtte.importAsset"}}</button>
+        <button class="import {{#unless compatible}}disabled{{/unless}}" title="{{localize "mtte.importAssetToolTip"}}" {{#unless compatible}}disabled="disabled"{{/unless}}>
+          <i class="fas fa-file-import"></i> {{localize "mtte.importAsset"}}
+        </button>
+        <button class="download" title="{{localize "mtte.downloadImageArtToolTip"}}">
+          <i class="fa-solid fa-download"></i> {{localize "mtte.downloadImageArt"}}
+        </button>
         {{/if}}
         {{#if information}}
           {{#unless pack.hasAccess}}

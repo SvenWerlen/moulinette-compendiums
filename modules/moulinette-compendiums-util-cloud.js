@@ -66,10 +66,11 @@ export class MoulinetteCompendiumsCloudUtil {
             id: r.id,
             img : thumb,
             fullImg : pack.hasAccess ? fullImage : thumb,
-            filename: `${r.compendium}/`,
+            filename: r.img ? r.img.split("/").pop() : null,
             type: r.type,
             pack: pack.idx,
             name: r.name,
+            system: r.system,
             infos: MoulinetteCompendiumsUtil.getAdditionalInfoFromMeta(r)
           }
           assets.push(asset)

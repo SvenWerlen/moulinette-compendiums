@@ -40,7 +40,8 @@ export class MoulinetteCompendiumsPreview extends FormApplication {
       searchResult: this.searchResult,
       information: this.information,
       asset: this.asset, 
-      pack: this.pack 
+      pack: this.pack,
+      compatible: !this.searchResult.system || this.searchResult.system == game.system.id
     }
   }
 
@@ -63,6 +64,23 @@ export class MoulinetteCompendiumsPreview extends FormApplication {
       if(this.information) {
         window.open(`${this.information.publisherUrl}/membership`, '_blank');
       }
+    }
+    else if(source.classList.contains("download")) {
+      if(this.searchResult.fullImg && this.searchResult.filename) {
+        const toDownload = this.searchResult.fullImg
+        const folder = game.moulinette.applications.MoulinetteFileUtil.getMoulinetteBasePath("compendiums", this.pack.publisher, this.pack.name)
+        const uploadList = []
+        if(await game.moulinette.applications.MoulinetteFileUtil.downloadFile(toDownload, folder, this.searchResult.filename, false, uploadList)) {
+          const path = folder + (folder.endsWith("/") ? "" : "/") + this.searchResult.filename  
+          navigator.clipboard.writeText(path).then(() => {
+            ui.notifications.info(game.i18n.localize("mtte.copiedClipboardSuccess"))
+          })
+          .catch(() => {
+            ui.notifications.warn(game.i18n.localize("mtte.copiedClipboardFail"))
+            console.warn(`Moulinette Compendiums | Copy to clipboard failed. Path to asset = ${path}`)
+          });
+        }
+      }      
     }
     else if(source.classList.contains("import")) {
       const data = await MoulinetteCompendiumsCloudUtil.downloadDependencies(this.asset, this.pack)
