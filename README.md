@@ -12,8 +12,8 @@ https://github.com/SvenWerlen/moulinette-compendiums/assets/938060/1e43a9d3-4125
 
 ## Browse compendiums
 
-Moulinette enables a more user-friendly and efficient way to navigate the content of FoundryVTT compendiums.
-Moulinette automatically searches for all the content in locally installed modules as well as from creators you support and that are available on the Moulinette Cloud.
+Moulinette Compendiums enables a more user-friendly and efficient way to navigate the content of FoundryVTT compendiums.
+It automatically searches for all the content in locally installed modules and systems as well as from creators you support and that are available on the [Moulinette Cloud](https://assets.moulinette.cloud/marketplace/creators).
 
 ![Browse compendiums](./docs/img/browse.jpg)
 _(Assets and artwork from <a href="https://www.patreon.com/abyssalbrews">AbyssalBrews</a>)_
