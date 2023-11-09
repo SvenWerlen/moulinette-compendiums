@@ -8,6 +8,8 @@
 
 This is a submodule for [Moulinette Core](https://github.com/SvenWerlen/moulinette-core). See [Moulinette Core](https://github.com/SvenWerlen/moulinette-core) for an overview of all modules.
 
+https://raw.githubusercontent.com/svenwerlen/moulinette-compendiums/master/docs/vid/overview.mp4
+
 ## Browse compendiums
 
 Moulinette enables a more user-friendly and efficient way to navigate the content of FoundryVTT compendiums.
