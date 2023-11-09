@@ -8,7 +8,7 @@
 
 This is a submodule for [Moulinette Core](https://github.com/SvenWerlen/moulinette-core). See [Moulinette Core](https://github.com/SvenWerlen/moulinette-core) for an overview of all modules.
 
-https://raw.githubusercontent.com/svenwerlen/moulinette-compendiums/master/docs/vid/overview.mp4
+<video src='./docs/vid/overview.mp4'></video>
 
 ## Browse compendiums
 
