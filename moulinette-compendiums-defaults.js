@@ -34,6 +34,8 @@ export class MoulinetteCompendiumsDefaults {
       '*': {
         Scene: {
           grid: 'grid',
+          gridUnits: 'gridUnits',
+          gridDistance: 'gridDistance',
           width: 'width',
           height: 'height',
           walls: '#walls',
@@ -99,8 +101,14 @@ export class MoulinetteCompendiumsDefaults {
             if(cr == 0.125) cr = "1/8"
             if(cr == 0.25) cr = "1/4"
             if(cr == 0.5) cr = "1/2"
-            infos.text1 = `CR ${cr} &nbsp;<i class="fa-solid fa-heart"></i> ${meta.hp}`
-            infos.text2 = `<i class="fa-solid fa-shield"></i> ${meta.ac ? meta.ac : "?"} &nbsp;<i class="fa-solid fa-shoe-prints"></i> ${meta.walk} ${meta.units}`
+            infos.text1 = cr ? `CR ${cr} &nbsp;` : ""
+            if(meta.hp) {
+              infos.text1 += `<i class="fa-solid fa-heart"></i> ${meta.hp}`
+            }
+            infos.text2 = meta.ac ? `<i class="fa-solid fa-shield"></i> ${meta.ac} &nbsp;` : ""
+            if(meta.walk && meta.units) {
+              infos.text2 += `<i class="fa-solid fa-shoe-prints"></i> ${meta.walk} ${meta.units}`
+            }
           }
           return infos
         }
@@ -112,11 +120,19 @@ export class MoulinetteCompendiumsDefaults {
           const infos = { text1: null, text2: null, icons: [] }
           // size
           if(meta?.grid) {
-            const gridSize = meta.grid.size
-            const w = Math.round(meta.width/gridSize)
-            const h = Math.round(meta.height/gridSize)
-            const step = `${meta.grid.distance} ${meta.grid.units}`
-            infos.text1 = `<i class="fas fa-ruler"></i> ${w}x${h} (${step})`
+            if(meta.grid.constructor == Object) {
+              const gridSize = meta.grid.size
+              const w = Math.round(meta.width/gridSize)
+              const h = Math.round(meta.height/gridSize)
+              const step = `${meta.grid.distance} ${meta.grid.units}`
+              infos.text1 = `<i class="fas fa-ruler"></i> ${w}x${h} (${step})`
+            } else if(meta.gridUnits && meta.gridDistance) {
+              const gridSize = meta.grid
+              const w = Math.round(meta.width/gridSize)
+              const h = Math.round(meta.height/gridSize)
+              const step = `${meta.gridDistance} ${meta.gridUnits}`
+              infos.text1 = `<i class="fas fa-ruler"></i> ${w}x${h} (${step})`
+            }
           }
           // components
           if(meta.walls > 0)    { infos.icons.push({ img: "fa-solid fa-block-brick", label: game.i18n.localize("mtte.filterHasWalls") }) }
