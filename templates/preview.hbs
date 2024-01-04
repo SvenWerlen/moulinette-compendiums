@@ -3,9 +3,16 @@
     <h1>{{asset.name}}</h1>
     <div class="compendium">
       <img src="{{searchResult.fullImg}}" {{#unless pack.hasAccess}}class="preview"{{/unless}}/>
-      <ul class="infos">
-        <li class="main"><b>Creator:</b> {{pack.publisher}}</li>
-        <li class="main"><b>Pack:</b> {{pack.name}}</li>
+      {{#if description}}
+      <div class="overview">
+        {{{description}}}
+      </div>
+      {{/if}}
+    </div>
+    <div class="infos">
+      <ul>
+        <li class="main"><b>Creator:</b> <a href="{{information.publisherUrl}}" target="_blank">{{pack.publisher}}</a></li>
+        <li class="main"><b>Pack:</b> <a href="{{information.mouliplaceUrl}}" target="_blank">{{pack.name}}</a></li>
         <li>
           {{#if information}}
           <hr>
@@ -23,7 +30,6 @@
         </li>
         {{/unless}}
       </ul>
-      
     </div>
     <footer>
       <div class="actions">

@@ -1,7 +1,7 @@
 {
   "mtte.browseAssetPack": "Browse pack",
   "mtte.browseAssetPackToolTip": "Close this window and browse all assets from the same pack",
-  "mtte.compendiumPreview": "Asset from Moulinette Cloud",
+  "mtte.compendiumPreview": "{type} from Moulinette Cloud",
   "mtte.compendiums": "Compendiums",
   "mtte.configCompendiums4players": "Enable Compendiums for players",
   "mtte.configCompendiums4playersHint": "Allows players to use Moulinette Compendiums.",

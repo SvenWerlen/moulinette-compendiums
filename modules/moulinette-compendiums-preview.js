@@ -6,7 +6,7 @@ import { MoulinetteCompendiumsCloudUtil } from "./moulinette-compendiums-util-cl
 export class MoulinetteCompendiumsPreview extends FormApplication {
 
   constructor(parent, searchResult, asset, pack) {
-    super()
+    super(null, { title: game.i18n.format("mtte.compendiumPreview", { type: searchResult.type}) })
     this.parent = parent
     this.searchResult = duplicate(searchResult)
     this.asset = duplicate(asset);
@@ -15,14 +15,12 @@ export class MoulinetteCompendiumsPreview extends FormApplication {
     //console.log(this.searchResult)
     //console.log(this.asset)
     //console.log(this.pack)
-
   }
 
   static get defaultOptions() {
     return mergeObject(super.defaultOptions, {
       id: "moulinette-compendiumpreview",
       classes: ["mtte", "forge", "preview"],
-      title: game.i18n.localize("mtte.compendiumPreview"),
       template: "modules/moulinette-compendiums/templates/preview.hbs",
       width: 800,
       height: 600,
@@ -36,13 +34,22 @@ export class MoulinetteCompendiumsPreview extends FormApplication {
     const client = new game.moulinette.applications.MoulinetteClient()
     const information = await client.get(`/api/marketplace/${this.pack.packId}`)
     this.information = information.status == 200 ? information.data : null
+
     return { 
       searchResult: this.searchResult,
       information: this.information,
+      description: this.generateDescription(),
       asset: this.asset, 
       pack: this.pack,
       compatible: !this.searchResult.system || this.searchResult.system == game.system.id
     }
+  }
+
+  generateDescription() {
+    if(this.searchResult.type == "Adventure") {
+      return `<h2>${game.i18n.localize("ADVENTURE.ImportHeaderOverview")}</h2> ${this.asset.description}`
+    }
+    return ""
   }
 
   activateListeners(html) {
@@ -84,6 +91,12 @@ export class MoulinetteCompendiumsPreview extends FormApplication {
     }
     else if(source.classList.contains("import")) {
       const data = await MoulinetteCompendiumsCloudUtil.downloadDependencies(this.asset, this.pack)
+      // special case for adventures
+      if(this.searchResult.type == "Adventure") {
+        const importer = new AdventureImporter(new Adventure(data))
+        return importer.render(true)
+      }
+      
       // create new asset
       const documentClass = getDocumentClass(this.searchResult.type)
       const doc = await documentClass.create(data)

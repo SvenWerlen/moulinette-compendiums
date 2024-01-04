@@ -73,6 +73,10 @@ export class MoulinetteCompendiumsCloudUtil {
             system: r.system,
             infos: MoulinetteCompendiumsUtil.getAdditionalInfoFromMeta(r)
           }
+
+          // cleanup (invalid assets)
+          if(asset.type == "Scene" && Object.keys(r.meta) == 0) continue
+
           assets.push(asset)
         }
       }
@@ -132,7 +136,7 @@ export class MoulinetteCompendiumsCloudUtil {
   static async downloadDependencies(asset, pack) {
     // retrieve all the dependencies to be downloaded
     const assetAsString = JSON.stringify(asset)
-    const deps = assetAsString.match(/"#DEP#[^"]+/g)
+    const deps = assetAsString.match(/"#DEP#[^"\\]+/g)
     // download all dependencies
     const toDownload = []
     if(deps) {

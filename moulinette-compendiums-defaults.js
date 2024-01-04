@@ -54,6 +54,12 @@ export class MoulinetteCompendiumsDefaults {
         },
         RollTable: {
           results: '#collections.results'
+        },
+        Adventure: {
+          caption: 'caption',
+          scenes: '#scenes',
+          actors: '#actors',
+          journal: '#journal',
         }
       }
     }
@@ -158,11 +164,27 @@ export class MoulinetteCompendiumsDefaults {
           }
           return infos
         },
-        // RolleTables
+        // RollTables
         RollTable: function(meta) {
           const infos = { text1: null, text2: null, icons: [] }
           infos.text1 = `${meta.results} ${game.i18n.localize(meta.results > 1 ? "mtte.results" : "mtte.result")}`
           infos.icons.push({ img: "fa-solid fa-dice-d20", label: game.i18n.localize("roll"), action: "roll"})
+          return infos
+        },
+        // Adventure
+        Adventure: function(meta) {
+          const infos = { text1: null, text2: null, icons: [] }
+          if(meta.caption) {
+            infos.text1 = `<em>${meta.caption}</em>`
+            //infos.text2 = `<i class="fas fa-book-open"></i> ${meta.scenes} ${game.i18n.localize("DOCUMENT.JournalEntries")}`
+          }
+          if(meta.scenes) {
+            infos.text2 = `<i class="fas fa-map"></i> ${meta.scenes} ${game.i18n.localize("DOCUMENT.Scenes")}`
+            if(meta.actors) {
+              infos.text2 += `&nbsp;&nbsp;<i class="fas fa-user"></i> ${meta.actors} ${game.i18n.localize("DOCUMENT.Actors")}`
+            }
+          }
+
           return infos
         }
       }

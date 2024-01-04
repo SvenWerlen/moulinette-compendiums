@@ -1,7 +1,7 @@
 {
   "mtte.browseAssetPack": "Voir pack",
   "mtte.browseAssetPackToolTip": "Ferme la fenêtre et affiche tous les contenus du même pack",
-  "mtte.compendiumPreview": "Contenu de Moulinette Cloud",
+  "mtte.compendiumPreview": "Contenu ({type}) de Moulinette Cloud",
   "mtte.compendiums": "Compendiums",
   "mtte.configCompendiums4players": "Activer Compendiums pour les joueurs",
   "mtte.configCompendiums4playersHint": "Permet aux joueurs d'utiliser Moulinette Compendiums.",

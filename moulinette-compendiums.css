@@ -104,13 +104,23 @@
 #moulinette-compendiumpreview .compendium {
   position: absolute;
   display: flex;
+  flex-direction: column;
+  left: 0px;
   top: 38px;
-  bottom: 90px;
+  bottom: 42px;
+  right: 300px;
+  overflow: hidden;
 }
 
-#moulinette-compendiumpreview .compendium .infos {
+#moulinette-compendiumpreview .infos {
+  position: absolute;
+  top: 38px;
+  right: 0px;
+  width: 300px;
+}
+
+#moulinette-compendiumpreview .infos ul {
   list-style: none;
-  min-width: 200px
 }
 
 #moulinette-compendiumpreview .disabled {
@@ -124,16 +134,17 @@
   margin-top: 20px;
 }
 
-#moulinette-compendiumpreview .compendium .infos .main {
+#moulinette-compendiumpreview .infos .main {
   font-size: 18px;
   margin: 0px;
 }
 
 #moulinette-compendiumpreview .compendium img {
+  flex-grow: 1;
   object-fit: contain;
   border: none;
-  margin: 10px;
-  max-width: calc(100% - 200px);
+  padding: 10px;
+  height: 100%;
   /** box-shadow: -25px -25px 0 -20px #f79007, 25px 25px 0 -20px #f79007; **/
 }
 
@@ -142,11 +153,18 @@
   max-height: 100px;
 }
 
+#moulinette-compendiumpreview .compendium .overview {
+  flex-grow: 0;
+  text-align: justify;
+  overflow-y: scroll;
+  padding: 10px;
+}
+
 #moulinette-compendiumpreview footer {
   position: absolute;
   bottom: 0px;
   left: 0px;
-  height: 50px;
+  height: 35px;
   overflow: hidden;
   width: 100%;
 }
