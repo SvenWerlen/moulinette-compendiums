@@ -15,8 +15,12 @@ export class MoulinetteCompendiumsCloudUtil {
     const guid = game.moulinette?.user.id
     const results = await client.get(guid ? `/api/compendiums/packs?guid=${guid}` : "/api/compendiums/packs")
     const creators = []
+
+    const curExclusions = game.settings.get("moulinette", "dataExclusions")
+    
     if(results.status == 200) {
       for(const r of results.data) {
+        if(r.creator in curExclusions && '*' in curExclusions[r.creator]) continue
         const packData = {
           idx: idx++,
           packId: r.packId,
@@ -30,6 +34,7 @@ export class MoulinetteCompendiumsCloudUtil {
           isRemote: true,
           hasAccess: r.hasAccess
         }
+        // check creator is not 
         creators.push(packData)
       }
     }

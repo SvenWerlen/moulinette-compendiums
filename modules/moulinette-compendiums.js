@@ -41,10 +41,12 @@ export class MoulinetteCompendiums extends game.moulinette.applications.Moulinet
     this.assets = data.assets
 
     // fetch from Moulinette Cloud
-    const lastIdx = data.packs.length
-    const user = await game.moulinette.applications.Moulinette.getUser() // don't remove! Otherwise won't retrieve user session
-    const cloudPacks = await MoulinetteCompendiumsCloudUtil.getCloudPacks(lastIdx)
-    this.assetsPacks = this.assetsPacks.concat(cloudPacks)
+    if(game.settings.get("moulinette-core", "enableMoulinetteCloud")) {
+      const lastIdx = data.packs.length
+      const user = await game.moulinette.applications.Moulinette.getUser() // don't remove! Otherwise won't retrieve user session
+      const cloudPacks = await MoulinetteCompendiumsCloudUtil.getCloudPacks(lastIdx)
+      this.assetsPacks = this.assetsPacks.concat(cloudPacks)
+    }
 
     return duplicate(this.assetsPacks)
   }
@@ -83,9 +85,11 @@ export class MoulinetteCompendiums extends game.moulinette.applications.Moulinet
       return true;
     })
     // CLOUD SEARCH
-    const packIds = packList ? packList.map(p => this.assetsPacks[p].packId) : null
-    const cloudAssets = await MoulinetteCompendiumsCloudUtil.searchCloudAssets(searchTerms, publisher, packIds, this.assetsPacks)
-    this.searchResults = this.searchResults.concat(cloudAssets)
+    if(game.settings.get("moulinette-core", "enableMoulinetteCloud")) {
+      const packIds = packList ? packList.map(p => this.assetsPacks[p].packId) : null
+      const cloudAssets = await MoulinetteCompendiumsCloudUtil.searchCloudAssets(searchTerms, publisher, packIds, this.assetsPacks)
+      this.searchResults = this.searchResults.concat(cloudAssets)
+    }
 
     // sort results by name
     this.searchResults.sort((a,b) => a.name.localeCompare(b.name))
