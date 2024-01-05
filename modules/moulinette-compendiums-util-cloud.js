@@ -20,7 +20,9 @@ export class MoulinetteCompendiumsCloudUtil {
     
     if(results.status == 200) {
       for(const r of results.data) {
-        if(r.creator in curExclusions && '*' in curExclusions[r.creator]) continue
+        // apply exclusions
+        if(r.creator in curExclusions && ('*' in curExclusions[r.creator] || r.packId in curExclusions[r.creator])) continue
+        
         const packData = {
           idx: idx++,
           packId: r.packId,
@@ -44,7 +46,7 @@ export class MoulinetteCompendiumsCloudUtil {
   /**
    * Executes a search on Moulinette Cloud
    */
-  static async searchCloudAssets(searchTerms, selCreator, selPacks, packs) {
+  static async searchCloudAssets(searchTerms, selCreator, selPacks, packs, hasAccessOnly = true) {
     const client = new game.moulinette.applications.MoulinetteClient()
     const results = await client.post("/api/compendiums/search", { 
       query: searchTerms, 
@@ -56,7 +58,7 @@ export class MoulinetteCompendiumsCloudUtil {
     if(results.status == 200) {
       for(const r of results.data) {
         const pack = packs.find(p => p.packId == r.pack)
-        if(pack) {
+        if(pack && (!hasAccessOnly || pack.hasAccess)) {
           // prepare thumbnail
           // 1) remplace DEP with path from pack
           // 2) replace image file with thumbnail

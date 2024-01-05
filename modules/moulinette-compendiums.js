@@ -32,7 +32,7 @@ export class MoulinetteCompendiums extends game.moulinette.applications.Moulinet
   async getPackList() {
     
     if(this.assetsPacks) {
-      return duplicate(this.assetsPacks)
+      return duplicate(this.assetsPacks.filter((p) => p.isLocal || p.hasAccess))
     }
 
     // fetch from index
@@ -48,7 +48,7 @@ export class MoulinetteCompendiums extends game.moulinette.applications.Moulinet
       this.assetsPacks = this.assetsPacks.concat(cloudPacks)
     }
 
-    return duplicate(this.assetsPacks)
+    return duplicate(this.assetsPacks.filter((p) => p.isLocal || p.hasAccess))
   }
   
   
@@ -379,6 +379,7 @@ export class MoulinetteCompendiums extends game.moulinette.applications.Moulinet
         console.warn(`Moulinette Compendiums | Unable to fetch documents from compendium ${p.metadata.label}. Skipping...`)
         continue
       }
+
       const packData = {
         packId: p.metadata.id,
         publisher: creatorName,
@@ -441,6 +442,9 @@ export class MoulinetteCompendiums extends game.moulinette.applications.Moulinet
 
     console.groupEnd()
 
-    return { packs: assetsPacks, assets: assets }
+    // apply exclusions
+    const curExclusions = game.settings.get("moulinette", "dataExclusions")
+    const filteredPacks = assetsPacks.filter((p) => !(p.publisher in curExclusions && ('*' in curExclusions[p.publisher] || p.name in curExclusions[p.publisher])))
+    return { packs: filteredPacks, assets: assets }
   }
 }
