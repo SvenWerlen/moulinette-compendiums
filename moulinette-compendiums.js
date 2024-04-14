@@ -37,25 +37,48 @@ Hooks.once("ready", async function () {
     console.log("Moulinette Compendiums | Module loaded")
   }
 
+  const isLibwrapperAvailable = typeof libWrapper === "function"; // See: https://github.com/ruipin/fvtt-lib-wrapper
+
   // replace default FVTT implementation for Items
-  Item.implementation.fromDropDataOrig = Item.implementation.fromDropData
-  Item.implementation.fromDropData = async function(data, options={}) { 
-    await MoulinetteCompendiumsCloudUtil.handleDragAndDrop(data)
-    return await Item.implementation.fromDropDataOrig(data, options)
+  if (isLibwrapperAvailable) {
+    libWrapper.register("moulinette-compendiums", "Item.implementation.fromDropData", async (wrapped, ...args) => {
+      await MoulinetteCompendiumsCloudUtil.handleDragAndDrop(args[0])
+      return wrapped(...args);
+    }, "WRAPPER");
+  } else {
+    Item.implementation.fromDropDataOrig = Item.implementation.fromDropData
+    Item.implementation.fromDropData = async function(data, options={}) {
+      await MoulinetteCompendiumsCloudUtil.handleDragAndDrop(data)
+      return await Item.implementation.fromDropDataOrig(data, options)
+    }
   }
 
   // replace default FVTT implementation for Macros
-  Macro.implementation.fromDropDataOrig = Macro.implementation.fromDropData
-  Macro.implementation.fromDropData = async function(data, options={}) { 
-    await MoulinetteCompendiumsCloudUtil.handleDragAndDrop(data)
-    return await Macro.implementation.fromDropDataOrig(data, options)
+  if (isLibwrapperAvailable) {
+    libWrapper.register("moulinette-compendiums", "Macro.implementation.fromDropData", async (wrapped, ...args) => {
+      await MoulinetteCompendiumsCloudUtil.handleDragAndDrop(args[0])
+      return wrapped(...args);
+    }, "WRAPPER");
+  } else {
+    Macro.implementation.fromDropDataOrig = Macro.implementation.fromDropData
+    Macro.implementation.fromDropData = async function(data, options={}) {
+      await MoulinetteCompendiumsCloudUtil.handleDragAndDrop(data)
+      return await Macro.implementation.fromDropDataOrig(data, options)
+    }
   }
 
   // replace default FVTT implementation for JournalEntry
-  JournalEntry.implementation.fromDropDataOrig = JournalEntry.implementation.fromDropData
-  JournalEntry.implementation.fromDropData = async function(data, options={}) { 
-    await MoulinetteCompendiumsCloudUtil.handleDragAndDrop(data)
-    return await JournalEntry.implementation.fromDropDataOrig(data, options)
+  if (isLibwrapperAvailable) {
+    libWrapper.register("moulinette-compendiums", "JournalEntry.implementation.fromDropData", async (wrapped, ...args) => {
+      await MoulinetteCompendiumsCloudUtil.handleDragAndDrop(args[0])
+      return wrapped(...args);
+    }, "WRAPPER");
+  } else {
+    JournalEntry.implementation.fromDropDataOrig = JournalEntry.implementation.fromDropData
+    JournalEntry.implementation.fromDropData = async function(data, options={}) {
+      await MoulinetteCompendiumsCloudUtil.handleDragAndDrop(data)
+      return await JournalEntry.implementation.fromDropDataOrig(data, options)
+    }
   }
 });
 
