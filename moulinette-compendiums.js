@@ -38,7 +38,7 @@ Hooks.once("ready", async function () {
   }
 
   const isLibwrapperAvailable = typeof libWrapper === "function"; // See: https://github.com/ruipin/fvtt-lib-wrapper
-
+  console.log(isLibwrapperAvailable)
   // replace default FVTT implementation for Items
   if (isLibwrapperAvailable) {
     libWrapper.register("moulinette-compendiums", "Item.implementation.fromDropData", async (wrapped, ...args) => {
